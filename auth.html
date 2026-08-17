@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication - Bulk Medics</title>
+  <meta name="description" content="Log in or register for Bulk Medics, empowering pharmacies with quality and scale.">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-layout">
+    <!-- Branding Panel (Left) -->
+    <div class="auth-branding">
+      <div class="branding-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+      </div>
+      <div class="branding-content">
+        <div class="branding-header">
+          <a href="index.html" class="logo">
+            Bulk Medics
+          </a>
+        </div>
+        <div class="branding-main">
+          <h1>Empowering pharmacies with quality &amp; scale</h1>
+          <ul class="benefits-list">
+            <li>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Wholesale pricing on 10,000+ products</span>
+            </li>
+            <li>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Next-day delivery available nationwide</span>
+            </li>
+            <li>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Verified and compliant supply chain</span>
+            </li>
+          </ul>
+        </div>
+        <div class="branding-footer">
+          <p>Trusted by 500+ pharmacies nationwide</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Panel (Right) -->
+    <div class="auth-panel">
+      <a href="index.html" class="back-link">&larr; Back to home</a>
+      
+      <div class="auth-form-container">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button type="button" class="tab-btn active" data-target="login" id="tab-login">Log In</button>
+          <button type="button" class="tab-btn" data-target="register" id="tab-register">Register</button>
+          <div class="tab-indicator"></div>
+        </div>
+
+        <div class="forms-wrapper">
+          <!-- Login Form -->
+          <form id="login-form" class="auth-form active-form" novalidate>
+            <div class="form-group">
+              <label for="login-email" class="form-label">Email Address</label>
+              <input type="email" id="login-email" class="form-input" placeholder="you@pharmacy.com" required>
+              <div class="form-error" id="login-email-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="login-password" class="form-label">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
+                <button type="button" class="password-toggle" tabindex="-1">
+                  <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="icon-eye-off hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+              <div class="form-error" id="login-password-error"></div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg full-width submit-btn" id="login-submit">Log In</button>
+            <p class="form-switch-text">Don't have an account? <a href="#" class="switch-to-register">Register</a></p>
+          </form>
+
+          <!-- Register Form -->
+          <form id="register-form" class="auth-form" novalidate>
+            <div class="form-group">
+              <label for="register-name" class="form-label">Full Name</label>
+              <input type="text" id="register-name" class="form-input" placeholder="Dr. John Doe" required>
+              <div class="form-error" id="register-name-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="register-email" class="form-label">Email Address</label>
+              <input type="email" id="register-email" class="form-input" placeholder="you@pharmacy.com" required>
+              <div class="form-error" id="register-email-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="register-phone" class="form-label">Phone Number</label>
+              <input type="tel" id="register-phone" class="form-input" placeholder="10-digit number" required>
+              <div class="form-error" id="register-phone-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="register-password" class="form-label">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="register-password" class="form-input" placeholder="Min 6 characters" required>
+                <button type="button" class="password-toggle" tabindex="-1">
+                  <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="icon-eye-off hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+              <div class="form-error" id="register-password-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="register-confirm" class="form-label">Confirm Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="register-confirm" class="form-input" placeholder="Re-enter password" required>
+                <button type="button" class="password-toggle" tabindex="-1">
+                  <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg class="icon-eye-off hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+              </div>
+              <div class="form-error" id="register-confirm-error"></div>
+            </div>
+            <button type="submit" class="btn btn-accent btn-lg full-width submit-btn" id="register-submit">Create Account</button>
+            <p class="form-switch-text">Already have an account? <a href="#" class="switch-to-login">Log in</a></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+/* ============================================
+   BULK MEDICS — Auth Page Styles
+   ============================================ */
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ---- Branding Panel (Left - 60%) ---- */
+.auth-branding {
+  flex: 0 0 60%;
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-12) var(--space-16);
+  z-index: 1;
+}
+
+/* Subtle abstract pattern/shapes */
+.branding-shapes {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, hsla(174, 45%, 94%, 0.1), hsla(174, 45%, 94%, 0.02));
+}
+
+.shape-1 {
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  left: -200px;
+}
+
+.shape-2 {
+  width: 400px;
+  height: 400px;
+  bottom: 10%;
+  right: -100px;
+}
+
+.shape-3 {
+  width: 800px;
+  height: 800px;
+  top: 40%;
+  left: 20%;
+  border: 1px solid hsla(174, 45%, 94%, 0.1);
+  background: transparent;
+}
+
+.branding-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  z-index: 2;
+}
+
+.branding-header .logo {
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.branding-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 500px;
+}
+
+.branding-main h1 {
+  font-size: var(--text-5xl);
+  color: var(--color-white);
+  margin-bottom: var(--space-10);
+  line-height: var(--leading-tight);
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-lg);
+}
+
+.benefits-list svg {
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.branding-footer p {
+  font-size: var(--text-sm);
+  color: hsla(0, 0%, 100%, 0.7);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+/* ---- Form Panel (Right - 40%) ---- */
+.auth-panel {
+  flex: 0 0 40%;
+  background: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: var(--space-8);
+  min-height: 100vh;
+}
+
+.back-link {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: auto;
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  padding: var(--space-8) 0;
+}
+
+/* ---- Tabs ---- */
+.auth-tabs {
+  display: flex;
+  position: relative;
+  margin-bottom: var(--space-8);
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: var(--space-3) 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  width: 50%;
+  background: var(--color-primary);
+  transition: transform var(--transition-base);
+}
+
+.tab-btn[data-target="register"].active ~ .tab-indicator {
+  transform: translateX(100%);
+}
+
+/* ---- Forms ---- */
+.forms-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+  transform: translateX(20px);
+}
+
+.auth-form.active-form {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear;
+}
+
+.auth-form:not(.active-form) {
+  pointer-events: none;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.form-switch-text {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-4);
+}
+
+.form-switch-text a {
+  font-weight: 600;
+}
+
+/* ---- Password Toggle ---- */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper .form-input {
+  padding-right: var(--space-12);
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-3);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.password-toggle:hover, .password-toggle:focus {
+  color: var(--color-text);
+  outline: none;
+}
+
+.password-toggle svg {
+  pointer-events: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Loading State for Buttons */
+.submit-btn {
+  position: relative;
+}
+
+.submit-btn.loading {
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.submit-btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Input error state */
+.form-input.error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px hsla(0, 70%, 55%, 0.1);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .auth-branding {
+    flex: 0 0 50%;
+    padding: var(--space-8);
+  }
+  .auth-panel {
+    flex: 0 0 50%;
+    padding: var(--space-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-layout {
+    flex-direction: column;
+  }
+  
+  .auth-branding {
+    flex: none;
+    padding: var(--space-8) var(--space-6);
+    min-height: auto;
+  }
+  
+  .branding-main h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-6);
+  }
+  
+  .benefits-list {
+    display: none; /* Hide on mobile to save space */
+  }
+  
+  .branding-footer {
+    display: none;
+  }
+  
+  .auth-panel {
+    flex: 1;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    margin-top: -20px;
+    z-index: 2;
+    padding: var(--space-8) var(--space-6);
+  }
+  
+  .back-link {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-6);
+  }
+}
