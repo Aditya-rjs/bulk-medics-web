@@ -1,114 +1,176 @@
+/**
+ * Bulk Medics — Customer Dashboard (Redesigned)
+ * Sidebar navigation, overview, catalog, orders, packaging, profile
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Auth Guard
+  /* ---- Auth Guard ---- */
   if (!Store.isLoggedIn()) {
     window.location.href = 'auth.html';
-    return; // Stop execution
+    return;
   }
 
-  // Common DOM Elements
-  const userNameDisplay = document.getElementById('userNameDisplay');
-  const userGreetingBtn = document.getElementById('userGreetingBtn');
-  const userDropdown = document.getElementById('userDropdown');
-  const logoutBtn = document.getElementById('logoutBtn');
-  
-  const cartBtn = document.getElementById('cartBtn');
-  const cartBadge = document.getElementById('cartBadge');
-  const cartOverlay = document.getElementById('cartOverlay');
-  const cartPanel = document.getElementById('cartPanel');
-  const closeCartBtn = document.getElementById('closeCartBtn');
-  
-  // Tabs
-  const navTabs = document.querySelectorAll('.nav-tab');
-  const tabPanes = document.querySelectorAll('.tab-pane');
+  const user = Store.getCurrentUser();
 
-  // Formatters
-  const formatCurrency = (amount) => `$${Number(amount).toFixed(2)}`;
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+  /* ---- Formatters ---- */
+  const fmt = (n) => `$${Number(n).toFixed(2)}`;
+  const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const greetByTime = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+  const dayString = () => {
+    const d = new Date();
+    const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+    const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+  };
+  const initials = (name) => {
+    const parts = name.trim().split(' ');
+    return parts.length > 1
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : parts[0].substring(0, 2).toUpperCase();
   };
 
-  // User Setup
-  const user = Store.getCurrentUser();
+  /* ---- User Setup ---- */
+  const userAvatar = document.getElementById('userAvatar');
+  const sidebarUserName = document.getElementById('sidebarUserName');
+  const sidebarMenuBtn = document.getElementById('sidebarMenuBtn');
+  const sidebarDropdown = document.getElementById('sidebarDropdown');
+
   if (user) {
-    userNameDisplay.textContent = user.name.split(' ')[0];
+    const ini = initials(user.name);
+    userAvatar.textContent = ini;
+    sidebarUserName.textContent = user.name;
   }
 
-  // Toggle Dropdown
-  userGreetingBtn.addEventListener('click', (e) => {
+  // User dropdown
+  sidebarMenuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    const isExpanded = userGreetingBtn.getAttribute('aria-expanded') === 'true';
-    userGreetingBtn.setAttribute('aria-expanded', !isExpanded);
-    userDropdown.classList.toggle('active');
+    sidebarDropdown.classList.toggle('active');
   });
-
-  document.addEventListener('click', (e) => {
-    if (!userDropdown.contains(e.target) && !userGreetingBtn.contains(e.target)) {
-      userDropdown.classList.remove('active');
-      userGreetingBtn.setAttribute('aria-expanded', 'false');
-    }
-  });
+  document.addEventListener('click', () => sidebarDropdown.classList.remove('active'));
 
   // Logout
-  logoutBtn.addEventListener('click', () => {
+  document.getElementById('logoutBtn').addEventListener('click', () => {
     Store.logout();
     window.location.href = 'index.html';
   });
 
-  // Tab Navigation Logic
-  const switchTab = (tabId) => {
-    navTabs.forEach(tab => {
-      const isSelected = tab.dataset.tab === tabId;
-      tab.classList.toggle('active', isSelected);
-      tab.setAttribute('aria-selected', isSelected);
-    });
-    
-    tabPanes.forEach(pane => {
-      const isActive = pane.id === `${tabId}-tab`;
-      pane.classList.toggle('active', isActive);
-      pane.hidden = !isActive;
-    });
+  /* ---- Mobile Sidebar ---- */
+  const sidebar = document.getElementById('sidebar');
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileOverlay = document.getElementById('mobileOverlay');
 
-    // Update URL hash
+  mobileMenuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    mobileOverlay.classList.toggle('active');
+  });
+  mobileOverlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    mobileOverlay.classList.remove('active');
+  });
+
+  /* ---- Tab Navigation ---- */
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  const switchTab = (tabId) => {
+    sidebarLinks.forEach(l => {
+      l.classList.toggle('active', l.dataset.tab === tabId);
+    });
+    tabPanes.forEach(p => {
+      const isActive = p.id === `${tabId}-tab`;
+      p.classList.toggle('active', isActive);
+    });
     window.location.hash = tabId;
 
-    // Trigger tab-specific renders
+    // Close mobile sidebar
+    sidebar.classList.remove('active');
+    mobileOverlay.classList.remove('active');
+
+    // Tab-specific renders
+    if (tabId === 'overview') renderOverview();
     if (tabId === 'catalog') renderCatalog();
     if (tabId === 'orders') renderOrders();
     if (tabId === 'profile') renderProfile();
   };
 
-  navTabs.forEach(tab => {
-    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+  // Sidebar click
+  sidebarLinks.forEach(l => {
+    l.addEventListener('click', () => switchTab(l.dataset.tab));
   });
 
-  // Check initial hash
-  const initialHash = window.location.hash.replace('#', '');
-  if (['catalog', 'orders', 'profile'].includes(initialHash)) {
-    switchTab(initialHash);
-  } else {
-    switchTab('catalog'); // Default
-  }
+  // Profile link in dropdown
+  sidebarDropdown.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
 
-  // --- CATALOG TAB LOGIC ---
+  // All [data-tab] buttons across the page
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-tab]');
+    if (btn && !btn.classList.contains('sidebar-link') && !btn.closest('.sidebar-user-dropdown')) {
+      switchTab(btn.dataset.tab);
+    }
+  });
+
+  // Init tab from hash
+  const validTabs = ['overview', 'catalog', 'orders', 'packaging', 'profile'];
+  const hash = window.location.hash.replace('#', '');
+  switchTab(validTabs.includes(hash) ? hash : 'overview');
+
+  /* ---- OVERVIEW ---- */
+  const renderOverview = () => {
+    document.getElementById('overviewDate').textContent = dayString();
+    document.getElementById('overviewGreeting').textContent = `${greetByTime()}, ${user.name.split(' ')[0]} ✦`;
+    
+    // Stats
+    const orders = Store.getMyOrders();
+    const activeOrders = orders.filter(o => o.status === 'pending' || o.status === 'confirmed' || o.status === 'shipped');
+    const packagingOrders = orders.filter(o => o.customPackaging);
+    
+    document.getElementById('activeOrdersCount').textContent = String(activeOrders.length).padStart(2, '0');
+    document.getElementById('productsCount').textContent = String(Store.getMedicines().length).padStart(2, '0');
+    document.getElementById('packagingCount').textContent = String(packagingOrders.length).padStart(2, '0');
+
+    // Orders badge in sidebar
+    const badge = document.getElementById('ordersBadge');
+    if (activeOrders.length > 0) {
+      badge.textContent = activeOrders.length;
+    } else {
+      badge.textContent = '';
+    }
+
+    // Frequently ordered (show first 4 medicines)
+    const meds = Store.getMedicines().slice(0, 4);
+    const freqGrid = document.getElementById('freqGrid');
+    freqGrid.innerHTML = meds.map(m => `
+      <div class="freq-card" data-tab="catalog">
+        <div class="freq-card-cat">${m.category}</div>
+        <div class="freq-card-name">${m.name}</div>
+        <div class="freq-card-price"><strong>${fmt(m.pricePerUnit)}</strong> / ${m.unit}</div>
+      </div>
+    `).join('');
+  };
+
+  /* ---- CATALOG ---- */
   let currentSearch = '';
   let currentCategory = 'All';
   const medicineGrid = document.getElementById('medicineGrid');
   const categoryFilters = document.getElementById('categoryFilters');
   const searchInput = document.getElementById('searchInput');
+  const globalSearch = document.getElementById('globalSearch');
   const catalogEmptyState = document.getElementById('catalogEmptyState');
 
   const renderCategoryFilters = () => {
-    const categories = ['All', ...Store.getCategories()];
-    categoryFilters.innerHTML = categories.map(cat => `
-      <button class="category-pill ${cat === currentCategory ? 'active' : ''}" data-category="${cat}">
-        ${cat}
-      </button>
+    const cats = ['All', ...Store.getCategories()];
+    categoryFilters.innerHTML = cats.map(c => `
+      <button class="category-pill ${c === currentCategory ? 'active' : ''}" data-category="${c}">${c}</button>
     `).join('');
-
     categoryFilters.querySelectorAll('.category-pill').forEach(pill => {
-      pill.addEventListener('click', (e) => {
-        currentCategory = e.target.dataset.category;
+      pill.addEventListener('click', () => {
+        currentCategory = pill.dataset.category;
         renderCategoryFilters();
         renderCatalog();
       });
@@ -116,59 +178,46 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const renderCatalog = () => {
-    let medicines = Store.getMedicines();
-    
-    // Filter by Category
-    if (currentCategory !== 'All') {
-      medicines = medicines.filter(m => m.category === currentCategory);
-    }
-    
-    // Filter by Search
-    if (currentSearch.trim() !== '') {
+    let meds = Store.getMedicines();
+    if (currentCategory !== 'All') meds = meds.filter(m => m.category === currentCategory);
+    if (currentSearch.trim()) {
       const q = currentSearch.toLowerCase();
-      medicines = medicines.filter(m => 
-        m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q)
-      );
+      meds = meds.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
     }
 
-    if (medicines.length === 0) {
+    if (meds.length === 0) {
       medicineGrid.innerHTML = '';
       catalogEmptyState.classList.remove('hidden');
     } else {
       catalogEmptyState.classList.add('hidden');
-      medicineGrid.innerHTML = medicines.map(m => `
-        <div class="card medicine-card">
-          <div class="card-body">
-            <div class="mc-header">
-              <span class="badge badge-primary">${m.category}</span>
-            </div>
-            <h3 class="mc-title">${m.name}</h3>
-            <p class="mc-price">${formatCurrency(m.pricePerUnit)} <span style="font-size:0.8em;font-weight:400;color:var(--color-text-secondary)">/ ${m.unit}</span></p>
-            <p class="mc-min-order">Min. order: ${m.minOrder} ${m.unit}s</p>
-            <div class="mc-stock">
-              ${m.inStock ? '<span class="badge badge-success">In Stock</span>' : '<span class="badge badge-error">Out of Stock</span>'}
-            </div>
-            <div class="mc-actions mt-auto">
-              <input type="number" class="form-input mc-qty-input" id="qty-${m.id}" value="${m.minOrder}" min="${m.minOrder}" ${!m.inStock ? 'disabled' : ''}>
-              <button class="btn btn-primary add-to-cart-btn w-100" data-id="${m.id}" ${!m.inStock ? 'disabled' : ''}>Add to Cart</button>
-            </div>
+      medicineGrid.innerHTML = meds.map(m => `
+        <div class="medicine-card">
+          <div class="mc-header">
+            <span class="badge badge-primary">${m.category}</span>
+            ${m.inStock ? '<span class="badge badge-success">In Stock</span>' : '<span class="badge badge-error">Out of Stock</span>'}
+          </div>
+          <h3 class="mc-title">${m.name}</h3>
+          <p class="mc-desc">${m.description}</p>
+          <p class="mc-price">${fmt(m.pricePerUnit)} <span>/ ${m.unit}</span></p>
+          <p class="mc-min-order">Min. order: ${m.minOrder} ${m.unit}</p>
+          <div class="mc-actions">
+            <input type="number" class="mc-qty-input" id="qty-${m.id}" value="${m.minOrder}" min="${m.minOrder}" ${!m.inStock ? 'disabled' : ''}>
+            <button class="btn btn-primary add-to-cart-btn" data-id="${m.id}" ${!m.inStock ? 'disabled' : ''}>Add to Cart</button>
           </div>
         </div>
       `).join('');
 
-      // Add to cart listeners
       document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = parseInt(e.target.dataset.id);
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
           const qtyInput = document.getElementById(`qty-${id}`);
           const quantity = parseInt(qtyInput.value);
           const medicine = Store.getMedicineById(id);
-
+          if (!medicine) return;
           if (quantity < medicine.minOrder) {
-            Store.showToast(`Minimum order quantity is ${medicine.minOrder}`, 'warning');
+            Store.showToast(`Minimum order is ${medicine.minOrder} ${medicine.unit}`, 'warning');
             return;
           }
-
           if (Store.addToCart(id, quantity)) {
             Store.showToast(`${medicine.name} added to cart`, 'success');
             updateCartBadge();
@@ -179,23 +228,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Debounced Search
+  // Search (both bars)
   let searchTimeout;
-  searchInput.addEventListener('input', (e) => {
+  const handleSearch = (val) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      currentSearch = e.target.value;
+      currentSearch = val;
+      // If not on catalog, switch to it
+      if (!document.getElementById('catalog-tab').classList.contains('active')) {
+        switchTab('catalog');
+      }
       renderCatalog();
     }, 300);
-  });
+  };
+  searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+  if (globalSearch) globalSearch.addEventListener('input', (e) => handleSearch(e.target.value));
 
   renderCategoryFilters();
 
-  // --- CART LOGIC ---
+  /* ---- CART ---- */
+  const cartBadge = document.getElementById('cartBadge');
+  const cartBadgeMobile = document.getElementById('cartBadgeMobile');
   const cartHeaderCount = document.getElementById('cartHeaderCount');
   const cartItemsList = document.getElementById('cartItemsList');
   const cartEmptyState = document.getElementById('cartEmptyState');
   const cartTotalDisplay = document.getElementById('cartTotalDisplay');
+  const cartOverlay = document.getElementById('cartOverlay');
+  const cartPanel = document.getElementById('cartPanel');
   const customPackagingToggle = document.getElementById('customPackagingToggle');
   const customPackagingForm = document.getElementById('customPackagingForm');
   const placeOrderBtn = document.getElementById('placeOrderBtn');
@@ -203,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateCartBadge = () => {
     const count = Store.getCartCount();
     cartBadge.textContent = count;
+    if (cartBadgeMobile) cartBadgeMobile.textContent = count;
     cartHeaderCount.textContent = count;
   };
 
@@ -212,8 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (show) renderCart();
   };
 
-  cartBtn.addEventListener('click', () => toggleCart(true));
-  closeCartBtn.addEventListener('click', () => toggleCart(false));
+  document.getElementById('cartBtn').addEventListener('click', () => toggleCart(true));
+  if (document.getElementById('cartBtnMobile')) {
+    document.getElementById('cartBtnMobile').addEventListener('click', () => toggleCart(true));
+  }
+  document.getElementById('closeCartBtn').addEventListener('click', () => toggleCart(false));
   cartOverlay.addEventListener('click', () => toggleCart(false));
 
   customPackagingToggle.addEventListener('change', (e) => {
@@ -222,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const renderCart = () => {
     const cart = Store.getCart();
-    
     if (cart.length === 0) {
       cartItemsList.innerHTML = '';
       cartEmptyState.classList.remove('hidden');
@@ -230,38 +292,33 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       cartEmptyState.classList.add('hidden');
       placeOrderBtn.disabled = false;
-      
       cartItemsList.innerHTML = cart.map(item => `
         <div class="cart-item">
           <div class="ci-details">
             <div class="ci-title">${item.name}</div>
-            <div class="ci-price">${formatCurrency(item.pricePerUnit)} / ${item.unit}</div>
+            <div class="ci-price">${fmt(item.pricePerUnit)} / ${item.unit}</div>
             <div class="ci-actions">
               <div class="ci-qty-controls">
-                <button class="qty-btn qty-minus" data-id="${item.medicineId}">-</button>
+                <button class="qty-btn qty-minus" data-id="${item.medicineId}">−</button>
                 <span class="qty-val">${item.quantity}</span>
                 <button class="qty-btn qty-plus" data-id="${item.medicineId}">+</button>
               </div>
-              <button class="remove-btn" data-id="${item.medicineId}" title="Remove item">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <button class="remove-btn" data-id="${item.medicineId}" title="Remove">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
           </div>
-          <div class="ci-total">
-            ${formatCurrency(item.pricePerUnit * item.quantity)}
-          </div>
+          <div class="ci-total">${fmt(item.pricePerUnit * item.quantity)}</div>
         </div>
       `).join('');
 
-      // Attach cart item events
       document.querySelectorAll('.qty-minus').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = parseInt(e.target.dataset.id);
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
           const item = cart.find(i => i.medicineId === id);
-          if (item.quantity > item.minOrder) {
+          if (item && item.quantity > item.minOrder) {
             Store.updateCartItem(id, item.quantity - 1);
-            updateCartBadge();
-            renderCart();
+            updateCartBadge(); renderCart();
           } else {
             Store.showToast(`Minimum order is ${item.minOrder}`, 'warning');
           }
@@ -269,54 +326,46 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       document.querySelectorAll('.qty-plus').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = parseInt(e.target.dataset.id);
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
           const item = cart.find(i => i.medicineId === id);
-          Store.updateCartItem(id, item.quantity + 1);
-          updateCartBadge();
-          renderCart();
+          if (item) {
+            Store.updateCartItem(id, item.quantity + 1);
+            updateCartBadge(); renderCart();
+          }
         });
       });
 
       document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const btnEl = e.target.closest('.remove-btn');
-          const id = parseInt(btnEl.dataset.id);
-          Store.removeFromCart(id);
-          updateCartBadge();
-          renderCart();
+        btn.addEventListener('click', () => {
+          Store.removeFromCart(btn.dataset.id);
+          Store.showToast('Item removed from cart', 'info');
+          updateCartBadge(); renderCart();
         });
       });
     }
-
-    cartTotalDisplay.textContent = formatCurrency(Store.getCartTotal());
+    cartTotalDisplay.textContent = fmt(Store.getCartTotal());
   };
 
   placeOrderBtn.addEventListener('click', () => {
     if (Store.getCart().length === 0) return;
-
     let customPackaging = null;
     if (customPackagingToggle.checked) {
       customPackaging = {
         brandName: document.getElementById('cpBrandName').value.trim(),
         packagingType: document.getElementById('cpType').value,
-        labelNotes: document.getElementById('cpNotes').value.trim()
+        labelNotes: document.getElementById('cpNotes').value.trim(),
       };
     }
-
     const result = Store.placeOrder(customPackaging);
-    
     if (result.success) {
       Store.showToast('Order placed successfully!', 'success');
       toggleCart(false);
-      
-      // Reset custom packaging form
       customPackagingToggle.checked = false;
       customPackagingForm.classList.add('hidden');
       document.getElementById('cpBrandName').value = '';
       document.getElementById('cpType').selectedIndex = 0;
       document.getElementById('cpNotes').value = '';
-      
       updateCartBadge();
       switchTab('orders');
     } else {
@@ -326,56 +375,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateCartBadge();
 
-
-  // --- ORDERS TAB LOGIC ---
+  /* ---- ORDERS ---- */
   const ordersList = document.getElementById('ordersList');
   const ordersEmptyState = document.getElementById('ordersEmptyState');
 
   const renderOrders = () => {
     const orders = Store.getMyOrders();
-    
     if (orders.length === 0) {
       ordersList.innerHTML = '';
       ordersEmptyState.classList.remove('hidden');
     } else {
       ordersEmptyState.classList.add('hidden');
-      ordersList.innerHTML = orders.map(order => {
-        const itemS = order.items.length === 1 ? 'item' : 'items';
-        const badgeColor = {
-          'Pending': 'warning',
-          'Confirmed': 'info',
-          'Shipped': 'primary',
-          'Delivered': 'success'
-        }[order.status] || 'primary';
-
-        return `
-          <div class="order-card">
-            <div class="order-header" tabindex="0">
-              <div class="order-meta">
-                <span class="order-id">${order.id}</span>
-                <span class="order-date">${formatDate(order.createdAt)}</span>
-              </div>
-              <div class="order-summary">
-                <span class="badge badge-${badgeColor}">${order.status}</span>
-                <span class="order-total">${formatCurrency(order.totalAmount)}</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-text-muted)"><path d="M6 9l6 6 6-6"/></svg>
-              </div>
+      const statusBadge = (s) => {
+        const map = { pending: 'warning', confirmed: 'info', shipped: 'primary', delivered: 'success' };
+        return map[s] || 'primary';
+      };
+      ordersList.innerHTML = orders.map(order => `
+        <div class="order-card">
+          <div class="order-header">
+            <div class="order-meta">
+              <span class="order-id">${order.id}</span>
+              <span class="order-date">${fmtDate(order.createdAt)}</span>
             </div>
-            <div class="order-details">
-              <h4 style="margin-bottom:12px;font-size:var(--text-sm);color:var(--color-text-secondary)">Order Items (${order.items.length} ${itemS})</h4>
+            <div class="order-summary">
+              <span class="badge badge-${statusBadge(order.status)}">${order.status}</span>
+              <span class="order-total">${fmt(order.total)}</span>
+              <svg class="order-expand-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div class="order-details">
+            <div class="order-details-inner">
+              <h4 style="margin-bottom:0.75rem;font-size:0.85rem;color:var(--color-text-secondary);font-family:var(--font-body);font-weight:600">
+                Order Items (${order.items.length})
+              </h4>
               ${order.items.map(item => `
                 <div class="order-item-row">
                   <div>
                     <span style="font-weight:500">${item.name}</span>
-                    <span style="color:var(--color-text-muted);font-size:var(--text-sm);margin-left:8px;">${item.quantity} × ${formatCurrency(item.pricePerUnit)}</span>
+                    <span style="color:var(--color-text-muted);font-size:0.82rem;margin-left:6px">${item.quantity} × ${fmt(item.pricePerUnit)}</span>
                   </div>
-                  <div style="font-weight:500">${formatCurrency(item.quantity * item.pricePerUnit)}</div>
+                  <div style="font-weight:600">${fmt(item.quantity * item.pricePerUnit)}</div>
                 </div>
               `).join('')}
-              
               ${order.customPackaging ? `
                 <div class="cp-info">
-                  <h4 style="margin-bottom:8px;font-size:var(--text-sm)">Custom Packaging Requested</h4>
+                  <h4 style="margin-bottom:0.5rem;font-size:0.82rem;font-family:var(--font-body);font-weight:600">Custom Packaging</h4>
                   <p><strong>Brand:</strong> ${order.customPackaging.brandName || 'N/A'}</p>
                   <p><strong>Type:</strong> ${order.customPackaging.packagingType}</p>
                   ${order.customPackaging.labelNotes ? `<p><strong>Notes:</strong> ${order.customPackaging.labelNotes}</p>` : ''}
@@ -383,61 +427,52 @@ document.addEventListener('DOMContentLoaded', () => {
               ` : ''}
             </div>
           </div>
-        `;
-      }).join('');
+        </div>
+      `).join('');
 
-      // Expand/collapse logic
       document.querySelectorAll('.order-header').forEach(header => {
-        header.addEventListener('click', (e) => {
-          const card = e.currentTarget.closest('.order-card');
-          card.classList.toggle('expanded');
-          const svg = e.currentTarget.querySelector('svg');
-          svg.style.transform = card.classList.contains('expanded') ? 'rotate(180deg)' : '';
-          svg.style.transition = 'transform 0.2s';
+        header.addEventListener('click', () => {
+          header.closest('.order-card').classList.toggle('expanded');
         });
       });
     }
   };
 
-
-  // --- PROFILE TAB LOGIC ---
+  /* ---- PROFILE ---- */
   const profileDisplayMode = document.getElementById('profileDisplayMode');
   const profileEditForm = document.getElementById('profileEditForm');
-  const editProfileBtn = document.getElementById('editProfileBtn');
-  const cancelEditProfileBtn = document.getElementById('cancelEditProfileBtn');
 
   const renderProfile = () => {
-    const currentUser = Store.getCurrentUser();
-    if (!currentUser) return;
+    const u = Store.getCurrentUser();
+    if (!u) return;
+    document.getElementById('profileNameDisplay').textContent = u.name;
+    document.getElementById('profileEmailDisplay').textContent = u.email;
+    document.getElementById('profilePhoneDisplay').textContent = u.phone || 'Not provided';
+    document.getElementById('profileDateDisplay').textContent = fmtDate(u.createdAt);
+    document.getElementById('profileNameHeading').textContent = u.name;
 
-    // Display fields
-    document.getElementById('profileNameDisplay').textContent = currentUser.name;
-    document.getElementById('profileEmailDisplay').textContent = currentUser.email;
-    document.getElementById('profilePhoneDisplay').textContent = currentUser.phone || 'Not provided';
-    document.getElementById('profileDateDisplay').textContent = formatDate(currentUser.createdAt);
+    const avatarLg = document.getElementById('profileAvatarLg');
+    avatarLg.textContent = initials(u.name);
 
-    // Form fields
-    document.getElementById('editName').value = currentUser.name;
-    document.getElementById('editEmail').value = currentUser.email;
-    document.getElementById('editPhone').value = currentUser.phone || '';
+    document.getElementById('editName').value = u.name;
+    document.getElementById('editEmail').value = u.email;
+    document.getElementById('editPhone').value = u.phone || '';
 
-    // Stats
     const orders = Store.getMyOrders();
-    const totalSpent = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-    
+    const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
     document.getElementById('statTotalOrders').textContent = orders.length;
-    document.getElementById('statTotalSpent').textContent = formatCurrency(totalSpent);
+    document.getElementById('statTotalSpent').textContent = fmt(totalSpent);
   };
 
-  editProfileBtn.addEventListener('click', () => {
+  document.getElementById('editProfileBtn').addEventListener('click', () => {
     profileDisplayMode.classList.add('hidden');
     profileEditForm.classList.remove('hidden');
   });
 
-  cancelEditProfileBtn.addEventListener('click', () => {
+  document.getElementById('cancelEditProfileBtn').addEventListener('click', () => {
     profileEditForm.classList.add('hidden');
     profileDisplayMode.classList.remove('hidden');
-    renderProfile(); // Reset form fields
+    renderProfile();
   });
 
   profileEditForm.addEventListener('submit', (e) => {
@@ -445,14 +480,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const newName = document.getElementById('editName').value.trim();
     const newEmail = document.getElementById('editEmail').value.trim();
     const newPhone = document.getElementById('editPhone').value.trim();
-
     if (Store.updateUser({ name: newName, email: newEmail, phone: newPhone })) {
-      Store.showToast('Profile updated successfully', 'success');
-      
-      // Update top nav greeting
-      const user = Store.getCurrentUser();
-      userNameDisplay.textContent = user.name.split(' ')[0];
-      
+      Store.showToast('Profile updated', 'success');
+      sidebarUserName.textContent = newName;
+      userAvatar.textContent = initials(newName);
       profileEditForm.classList.add('hidden');
       profileDisplayMode.classList.remove('hidden');
       renderProfile();
