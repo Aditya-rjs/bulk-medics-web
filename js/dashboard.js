@@ -20,19 +20,63 @@ document.addEventListener('DOMContentLoaded', () => {
     return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
-  function greetByTime() {
-    const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
+  /* ---- Live Date, Time & Dynamic Greeting Engine ---- */
+  function getProperName(name) {
+    if (!name) return 'Customer';
+    const first = name.trim().split(' ')[0];
+    return first.charAt(0).toUpperCase() + first.slice(1);
   }
 
-  function dayString() {
-    const d = new Date();
-    const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-    const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
-    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+  function getDynamicGreeting() {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 12) return { text: 'Good morning', icon: '☀️' };
+    if (h >= 12 && h < 17) return { text: 'Good afternoon', icon: '🌤️' };
+    if (h >= 17 && h < 22) return { text: 'Good evening', icon: '🌆' };
+    return { text: 'Good night', icon: '🌙' };
   }
+
+  function formatLiveDate() {
+    const now = new Date();
+    const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+    const dayName = days[now.getDay()];
+    const dateNum = now.getDate();
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    return {
+      dateString: `${dayName}, ${dateNum} ${monthName} ${year}`,
+      timeString: `${hours}:${minutes}:${seconds} ${ampm}`
+    };
+  }
+
+  function updateLiveOverviewHeader() {
+    const overviewDate = document.getElementById('overviewDate');
+    const overviewGreeting = document.getElementById('overviewGreeting');
+    if (!overviewDate && !overviewGreeting) return;
+
+    const { dateString, timeString } = formatLiveDate();
+    const { text, icon } = getDynamicGreeting();
+    const customerName = getProperName(user ? user.name : '');
+
+    if (overviewDate) {
+      overviewDate.innerHTML = `<span class="live-date-text">${dateString}</span> <span class="live-time-sep">•</span> <span class="live-clock-badge"><span class="live-clock-dot"></span>${timeString}</span>`;
+    }
+
+    if (overviewGreeting) {
+      overviewGreeting.innerHTML = `${text}, <span class="greeting-user-name">${customerName}</span> <span class="greeting-emoji">${icon}</span>`;
+    }
+  }
+
+  // Run live clock continuously every second
+  setInterval(updateLiveOverviewHeader, 1000);
 
   function initials(name) {
     if (!name) return 'BM';
@@ -251,10 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---- RENDER FUNCTIONS (Hoisted) ---- */
 
   function renderOverview() {
-    const overviewDate = document.getElementById('overviewDate');
-    const overviewGreeting = document.getElementById('overviewGreeting');
-    if (overviewDate) overviewDate.textContent = dayString();
-    if (overviewGreeting) overviewGreeting.textContent = `${greetByTime()}, ${user.name.split(' ')[0]} ✦`;
+    updateLiveOverviewHeader();
 
     const orders = Store.getMyOrders();
     const activeOrders = orders.filter(o => o.status === 'pending' || o.status === 'confirmed' || o.status === 'shipped');
