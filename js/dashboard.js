@@ -154,20 +154,32 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   };
 
-  /* ---- CATALOG ---- */
+  /* ---- PLACE ORDER (CATALOG) ---- */
   let currentSearch = '';
   let currentCategory = 'All';
+  let currentSort = 'default';
   const medicineGrid = document.getElementById('medicineGrid');
   const categoryFilters = document.getElementById('categoryFilters');
   const searchInput = document.getElementById('searchInput');
+  const sortSelect = document.getElementById('sortSelect');
   const globalSearch = document.getElementById('globalSearch');
   const catalogEmptyState = document.getElementById('catalogEmptyState');
+  const catalogResultsCount = document.getElementById('catalogResultsCount');
 
   const renderCategoryFilters = () => {
+    if (!categoryFilters) return;
+    const allMeds = Store.getMedicines();
     const cats = ['All', ...Store.getCategories()];
-    categoryFilters.innerHTML = cats.map(c => `
-      <button class="category-pill ${c === currentCategory ? 'active' : ''}" data-category="${c}">${c}</button>
-    `).join('');
+    
+    categoryFilters.innerHTML = cats.map(c => {
+      const count = c === 'All' ? allMeds.length : allMeds.filter(m => m.category === c).length;
+      return `
+        <button class="category-pill ${c === currentCategory ? 'active' : ''}" data-category="${c}">
+          ${c} <span class="category-pill-count">${count}</span>
+        </button>
+      `;
+    }).join('');
+
     categoryFilters.querySelectorAll('.category-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         currentCategory = pill.dataset.category;
@@ -178,11 +190,38 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const renderCatalog = () => {
-    let meds = Store.getMedicines();
-    if (currentCategory !== 'All') meds = meds.filter(m => m.category === currentCategory);
+    if (!medicineGrid) return;
+    let meds = [...Store.getMedicines()];
+
+    // Filter by category
+    if (currentCategory !== 'All') {
+      meds = meds.filter(m => m.category === currentCategory);
+    }
+
+    // Filter by search query
     if (currentSearch.trim()) {
       const q = currentSearch.toLowerCase();
-      meds = meds.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
+      meds = meds.filter(m => 
+        m.name.toLowerCase().includes(q) || 
+        m.category.toLowerCase().includes(q) || 
+        (m.description && m.description.toLowerCase().includes(q))
+      );
+    }
+
+    // Sort medicines
+    if (currentSort === 'name-asc') {
+      meds.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (currentSort === 'name-desc') {
+      meds.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (currentSort === 'price-asc') {
+      meds.sort((a, b) => a.pricePerUnit - b.pricePerUnit);
+    } else if (currentSort === 'price-desc') {
+      meds.sort((a, b) => b.pricePerUnit - a.pricePerUnit);
+    }
+
+    // Update result count text
+    if (catalogResultsCount) {
+      catalogResultsCount.textContent = `Showing ${meds.length} ${meds.length === 1 ? 'product' : 'products'}${currentCategory !== 'All' ? ` in ${currentCategory}` : ''}`;
     }
 
     if (meds.length === 0) {
@@ -190,36 +229,91 @@ document.addEventListener('DOMContentLoaded', () => {
       catalogEmptyState.classList.remove('hidden');
     } else {
       catalogEmptyState.classList.add('hidden');
-      medicineGrid.innerHTML = meds.map(m => `
-        <div class="medicine-card">
-          <div class="mc-header">
-            <span class="badge badge-primary">${m.category}</span>
-            ${m.inStock ? '<span class="badge badge-success">In Stock</span>' : '<span class="badge badge-error">Out of Stock</span>'}
+      medicineGrid.innerHTML = meds.map(m => {
+        const batchTotal = fmt(m.pricePerUnit * m.minOrder);
+        return `
+          <div class="medicine-card" data-med-id="${m.id}">
+            <div class="mc-header">
+              <span class="badge badge-primary">${m.category}</span>
+              ${m.inStock ? '<span class="badge badge-success"><span class="status-dot"></span> In Stock</span>' : '<span class="badge badge-error">Out of Stock</span>'}
+            </div>
+            <h3 class="mc-title">${m.name}</h3>
+            <p class="mc-desc">${m.description || 'Pharmaceutical grade formulation with complete batch test certificates.'}</p>
+            <div class="mc-price-row">
+              <div class="mc-unit-price">${fmt(m.pricePerUnit)} <span class="mc-unit-label">/ ${m.unit}</span></div>
+              <div class="mc-batch-summary">Min batch (${m.minOrder}): <strong>${batchTotal}</strong></div>
+            </div>
+            <div class="mc-packaging-tag">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Custom packaging eligible
+            </div>
+            <div class="mc-actions">
+              <div class="mc-stepper">
+                <button type="button" class="mc-stepper-btn mc-step-minus" data-id="${m.id}" aria-label="Decrease quantity">−</button>
+                <input type="number" class="mc-qty-input" id="qty-${m.id}" value="${m.minOrder}" min="${m.minOrder}" step="50" ${!m.inStock ? 'disabled' : ''}>
+                <button type="button" class="mc-stepper-btn mc-step-plus" data-id="${m.id}" aria-label="Increase quantity">+</button>
+              </div>
+              <button class="btn btn-primary add-to-cart-btn" data-id="${m.id}" ${!m.inStock ? 'disabled' : ''}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Add to Order
+              </button>
+            </div>
           </div>
-          <h3 class="mc-title">${m.name}</h3>
-          <p class="mc-desc">${m.description}</p>
-          <p class="mc-price">${fmt(m.pricePerUnit)} <span>/ ${m.unit}</span></p>
-          <p class="mc-min-order">Min. order: ${m.minOrder} ${m.unit}</p>
-          <div class="mc-actions">
-            <input type="number" class="mc-qty-input" id="qty-${m.id}" value="${m.minOrder}" min="${m.minOrder}" ${!m.inStock ? 'disabled' : ''}>
-            <button class="btn btn-primary add-to-cart-btn" data-id="${m.id}" ${!m.inStock ? 'disabled' : ''}>Add to Cart</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
+      // Stepper controls
+      document.querySelectorAll('.mc-step-minus').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const input = document.getElementById(`qty-${id}`);
+          const med = Store.getMedicineById(id);
+          if (!input || !med) return;
+          let val = parseInt(input.value) || med.minOrder;
+          val = Math.max(med.minOrder, val - 50);
+          input.value = val;
+        });
+      });
+
+      document.querySelectorAll('.mc-step-plus').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const input = document.getElementById(`qty-${id}`);
+          const med = Store.getMedicineById(id);
+          if (!input || !med) return;
+          let val = parseInt(input.value) || med.minOrder;
+          val = val + 50;
+          input.value = val;
+        });
+      });
+
+      // Add to Order / Cart handlers
       document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const id = btn.dataset.id;
           const qtyInput = document.getElementById(`qty-${id}`);
-          const quantity = parseInt(qtyInput.value);
+          const quantity = parseInt(qtyInput.value) || 0;
           const medicine = Store.getMedicineById(id);
           if (!medicine) return;
+
           if (quantity < medicine.minOrder) {
-            Store.showToast(`Minimum order is ${medicine.minOrder} ${medicine.unit}`, 'warning');
+            Store.showToast(`Minimum batch order for ${medicine.name} is ${medicine.minOrder} ${medicine.unit}`, 'warning');
             return;
           }
+
           if (Store.addToCart(id, quantity)) {
-            Store.showToast(`${medicine.name} added to cart`, 'success');
+            // Button visual feedback
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `✓ Added!`;
+            btn.style.background = 'var(--color-success)';
+            btn.style.borderColor = 'var(--color-success)';
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+              btn.style.background = '';
+              btn.style.borderColor = '';
+            }, 1200);
+
+            Store.showToast(`${quantity} units of ${medicine.name} added to your order`, 'success');
             updateCartBadge();
             renderCart();
           }
@@ -228,23 +322,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Search (both bars)
+  // Sort selector listener
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      renderCatalog();
+    });
+  }
+
+  // Search (both topbar and catalog page search)
   let searchTimeout;
   const handleSearch = (val) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       currentSearch = val;
-      // If not on catalog, switch to it
+      if (searchInput && searchInput.value !== val) searchInput.value = val;
+      if (globalSearch && globalSearch.value !== val) globalSearch.value = val;
+
       if (!document.getElementById('catalog-tab').classList.contains('active')) {
         switchTab('catalog');
       }
       renderCatalog();
-    }, 300);
+    }, 250);
   };
-  searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+
+  if (searchInput) searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
   if (globalSearch) globalSearch.addEventListener('input', (e) => handleSearch(e.target.value));
 
+  // Initialize filters & catalog
   renderCategoryFilters();
+  renderCatalog();
 
   /* ---- CART ---- */
   const cartBadge = document.getElementById('cartBadge');

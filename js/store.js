@@ -180,7 +180,12 @@ const Store = (() => {
 
   /* ---- Medicines ---- */
   function getMedicines() {
-    return get(KEYS.MEDICINES) || [];
+    let meds = get(KEYS.MEDICINES);
+    if (!meds || !Array.isArray(meds) || meds.length === 0) {
+      meds = SEED_MEDICINES;
+      set(KEYS.MEDICINES, SEED_MEDICINES);
+    }
+    return meds;
   }
 
   function getMedicineById(id) {
