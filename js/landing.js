@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // If it's a stats item, trigger counter animation
             if (entry.target.classList.contains('stat-item')) {
                 const numberElement = entry.target.querySelector('.stat-number');
-                if (numberElement && !numberElement.classList.contains('counted')) {
+                if (numberElement && !numberElement.classList.contains('counted') && !numberElement.classList.contains('stat-static')) {
                     animateValue(numberElement);
                     numberElement.classList.add('counted');
                 }
@@ -134,4 +134,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         window.requestAnimationFrame(step);
     }
+
+    // 6. FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        if (question) {
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                // Close all FAQs
+                faqItems.forEach(faq => faq.classList.remove('active'));
+                // Open clicked one if it wasn't already open
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    });
 });
