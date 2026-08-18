@@ -29,10 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getDynamicGreeting() {
     const h = new Date().getHours();
-    if (h >= 5 && h < 12) return { text: 'Good morning', icon: '☀️' };
-    if (h >= 12 && h < 17) return { text: 'Good afternoon', icon: '🌤️' };
-    if (h >= 17 && h < 22) return { text: 'Good evening', icon: '🌆' };
-    return { text: 'Good night', icon: '🌙' };
+    if (h < 12) {
+      return { text: 'Good morning', icon: '☀️' };
+    } else if (h < 17) {
+      return { text: 'Good afternoon', icon: '🌤️' };
+    } else {
+      return { text: 'Good evening', icon: '🌆' };
+    }
   }
 
   function formatLiveDate() {
