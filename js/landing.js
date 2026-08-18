@@ -142,11 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (question) {
             question.addEventListener('click', () => {
                 const isActive = item.classList.contains('active');
-                // Close all FAQs
-                faqItems.forEach(faq => faq.classList.remove('active'));
+                // Close all FAQs and update aria attributes
+                faqItems.forEach(faq => {
+                    faq.classList.remove('active');
+                    const q = faq.querySelector('.faq-question');
+                    if (q) q.setAttribute('aria-expanded', 'false');
+                });
                 // Open clicked one if it wasn't already open
                 if (!isActive) {
                     item.classList.add('active');
+                    question.setAttribute('aria-expanded', 'true');
                 }
             });
         }
