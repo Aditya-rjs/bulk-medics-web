@@ -239,7 +239,7 @@ class CountryCodePicker {
     this.searchInput = document.createElement('input');
     this.searchInput.type = 'text';
     this.searchInput.className = 'ccp-search';
-    this.searchInput.placeholder = 'Search country or code...';
+    this.searchInput.placeholder = '';
     this.searchInput.setAttribute('autocomplete', 'off');
 
     this.listEl = document.createElement('div');
