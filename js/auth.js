@@ -14,6 +14,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const switchToLogin = document.querySelector('.switch-to-login');
   const passwordToggles = document.querySelectorAll('.password-toggle');
 
+  // Initialize Country Code Pickers (197 countries, searchable)
+  let phonePicker = null;
+  let whatsappPicker = null;
+  
+  const phonePickerContainer = document.getElementById('phone-country-picker');
+  const whatsappPickerContainer = document.getElementById('whatsapp-country-picker');
+  
+  if (phonePickerContainer && typeof CountryCodePicker !== 'undefined') {
+    phonePicker = new CountryCodePicker(phonePickerContainer, {
+      defaultISO: 'IN',
+      hiddenInputId: 'register-phone-code',
+      onSelect: (country) => {
+        document.getElementById('register-phone-code').value = country.code;
+      }
+    });
+  }
+  
+  if (whatsappPickerContainer && typeof CountryCodePicker !== 'undefined') {
+    whatsappPicker = new CountryCodePicker(whatsappPickerContainer, {
+      defaultISO: 'IN',
+      hiddenInputId: 'register-whatsapp-code',
+      onSelect: (country) => {
+        document.getElementById('register-whatsapp-code').value = country.code;
+      }
+    });
+  }
+
   // 2. Tab Switching Logic
   function switchTab(target) {
     if (target === 'login') {
@@ -95,13 +122,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSameAsPhone = document.getElementById('btn-same-as-phone');
   if (btnSameAsPhone) {
     btnSameAsPhone.addEventListener('click', () => {
-      const phoneCode = document.getElementById('register-phone-code').value;
       const phoneNum = document.getElementById('register-phone').value.trim();
       if (!phoneNum) {
         showError('register-phone', 'Please enter your phone number first');
         return;
       }
-      document.getElementById('register-whatsapp-code').value = phoneCode;
+      // Copy country code via picker
+      if (phonePicker && whatsappPicker) {
+        const phoneCountry = phonePicker.getCountry();
+        whatsappPicker.setByISO(phoneCountry.iso);
+        document.getElementById('register-whatsapp-code').value = phoneCountry.code;
+      } else {
+        document.getElementById('register-whatsapp-code').value = document.getElementById('register-phone-code').value;
+      }
       document.getElementById('register-whatsapp').value = phoneNum;
       clearError('register-whatsapp');
       Store.showToast('Copied phone number to WhatsApp', 'info');

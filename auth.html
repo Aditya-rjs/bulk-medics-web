@@ -96,33 +96,8 @@
             <div class="form-group">
               <label for="register-phone" class="form-label">Phone Number <span class="required-star">*</span></label>
               <div class="phone-input-group">
-                <select id="register-phone-code" class="country-code-select" aria-label="Phone Country Code" required>
-                  <option value="+91" selected>🇮🇳 +91 (IN)</option>
-                  <option value="+1">🇺🇸 +1 (US)</option>
-                  <option value="+44">🇬🇧 +44 (UK)</option>
-                  <option value="+971">🇦🇪 +971 (AE)</option>
-                  <option value="+966">🇸🇦 +966 (SA)</option>
-                  <option value="+65">🇸🇬 +65 (SG)</option>
-                  <option value="+61">🇦🇺 +61 (AU)</option>
-                  <option value="+1">🇨🇦 +1 (CA)</option>
-                  <option value="+49">🇩🇪 +49 (DE)</option>
-                  <option value="+33">🇫🇷 +33 (FR)</option>
-                  <option value="+81">🇯🇵 +81 (JP)</option>
-                  <option value="+27">🇿🇦 +27 (ZA)</option>
-                  <option value="+234">🇳🇬 +234 (NG)</option>
-                  <option value="+55">🇧🇷 +55 (BR)</option>
-                  <option value="+60">🇲🇾 +60 (MY)</option>
-                  <option value="+62">🇮🇩 +62 (ID)</option>
-                  <option value="+880">🇧🇩 +880 (BD)</option>
-                  <option value="+94">🇱🇰 +94 (LK)</option>
-                  <option value="+977">🇳🇵 +977 (NP)</option>
-                  <option value="+92">🇵🇰 +92 (PK)</option>
-                  <option value="+254">🇰🇪 +254 (KE)</option>
-                  <option value="+63">🇵🇭 +63 (PH)</option>
-                  <option value="+34">🇪🇸 +34 (ES)</option>
-                  <option value="+39">🇮🇹 +39 (IT)</option>
-                  <option value="+86">🇨🇳 +86 (CN)</option>
-                </select>
+                <div id="phone-country-picker" class="country-picker-container"></div>
+                <input type="hidden" id="register-phone-code" value="+91">
                 <input type="tel" id="register-phone" class="form-input phone-number-input" placeholder="e.g. 9876543210" required>
               </div>
               <div class="form-error" id="register-phone-error"></div>
@@ -133,33 +108,8 @@
                 <button type="button" class="btn-copy-phone" id="btn-same-as-phone">Same as phone</button>
               </div>
               <div class="phone-input-group">
-                <select id="register-whatsapp-code" class="country-code-select" aria-label="WhatsApp Country Code" required>
-                  <option value="+91" selected>🇮🇳 +91 (IN)</option>
-                  <option value="+1">🇺🇸 +1 (US)</option>
-                  <option value="+44">🇬🇧 +44 (UK)</option>
-                  <option value="+971">🇦🇪 +971 (AE)</option>
-                  <option value="+966">🇸🇦 +966 (SA)</option>
-                  <option value="+65">🇸🇬 +65 (SG)</option>
-                  <option value="+61">🇦🇺 +61 (AU)</option>
-                  <option value="+1">🇨🇦 +1 (CA)</option>
-                  <option value="+49">🇩🇪 +49 (DE)</option>
-                  <option value="+33">🇫🇷 +33 (FR)</option>
-                  <option value="+81">🇯🇵 +81 (JP)</option>
-                  <option value="+27">🇿🇦 +27 (ZA)</option>
-                  <option value="+234">🇳🇬 +234 (NG)</option>
-                  <option value="+55">🇧🇷 +55 (BR)</option>
-                  <option value="+60">🇲🇾 +60 (MY)</option>
-                  <option value="+62">🇮🇩 +62 (ID)</option>
-                  <option value="+880">🇧🇩 +880 (BD)</option>
-                  <option value="+94">🇱🇰 +94 (LK)</option>
-                  <option value="+977">🇳🇵 +977 (NP)</option>
-                  <option value="+92">🇵🇰 +92 (PK)</option>
-                  <option value="+254">🇰🇪 +254 (KE)</option>
-                  <option value="+63">🇵🇭 +63 (PH)</option>
-                  <option value="+34">🇪🇸 +34 (ES)</option>
-                  <option value="+39">🇮🇹 +39 (IT)</option>
-                  <option value="+86">🇨🇳 +86 (CN)</option>
-                </select>
+                <div id="whatsapp-country-picker" class="country-picker-container"></div>
+                <input type="hidden" id="register-whatsapp-code" value="+91">
                 <input type="tel" id="register-whatsapp" class="form-input phone-number-input" placeholder="e.g. 9876543210" required>
               </div>
               <div class="form-error" id="register-whatsapp-error"></div>
@@ -194,6 +144,7 @@
     </div>
   </div>
 
+  <script src="js/country-picker.js"></script>
   <script src="js/store.js"></script>
   <script src="js/auth.js"></script>
 </body>
