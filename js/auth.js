@@ -58,7 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Validation Helpers
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidPhone = (phone) => /^\d{10}$/.test(phone.replace(/\D/g, ''));
+  const isValidPhoneNumber = (phone) => {
+    const digitsOnly = phone.replace(/\D/g, '');
+    return digitsOnly.length >= 7 && digitsOnly.length <= 15;
+  };
   
   function showError(inputId, message) {
     const input = document.getElementById(inputId);
@@ -75,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function clearAllErrors(form) {
-    form.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+    form.querySelectorAll('.form-input, .country-code-select').forEach(el => el.classList.remove('error'));
     form.querySelectorAll('.form-error').forEach(el => el.textContent = '');
   }
 
@@ -88,6 +91,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Copy Phone to WhatsApp
+  const btnSameAsPhone = document.getElementById('btn-same-as-phone');
+  if (btnSameAsPhone) {
+    btnSameAsPhone.addEventListener('click', () => {
+      const phoneCode = document.getElementById('register-phone-code').value;
+      const phoneNum = document.getElementById('register-phone').value.trim();
+      if (!phoneNum) {
+        showError('register-phone', 'Please enter your phone number first');
+        return;
+      }
+      document.getElementById('register-whatsapp-code').value = phoneCode;
+      document.getElementById('register-whatsapp').value = phoneNum;
+      clearError('register-whatsapp');
+      Store.showToast('Copied phone number to WhatsApp', 'info');
+    });
+  }
+
   // 3. Register Form Submit
   formRegister.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -95,42 +115,93 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const name = document.getElementById('register-name').value.trim();
     const email = document.getElementById('register-email').value.trim();
-    const phone = document.getElementById('register-phone').value.trim();
+    const phoneCode = document.getElementById('register-phone-code').value.trim();
+    const phoneNum = document.getElementById('register-phone').value.trim();
+    const whatsappCode = document.getElementById('register-whatsapp-code').value.trim();
+    const whatsappNum = document.getElementById('register-whatsapp').value.trim();
     const password = document.getElementById('register-password').value;
     const confirm = document.getElementById('register-confirm').value;
 
     let hasError = false;
 
-    if (!name) { showError('register-name', 'Full name is required'); hasError = true; }
-    if (!email) { showError('register-email', 'Email is required'); hasError = true; }
-    else if (!isValidEmail(email)) { showError('register-email', 'Invalid email format'); hasError = true; }
+    // Full Name validation
+    if (!name) { 
+      showError('register-name', 'Full name is required'); 
+      hasError = true; 
+    } else if (name.length < 2) {
+      showError('register-name', 'Please enter a valid full name'); 
+      hasError = true;
+    }
+
+    // Email validation
+    if (!email) { 
+      showError('register-email', 'Email address is required'); 
+      hasError = true; 
+    } else if (!isValidEmail(email)) { 
+      showError('register-email', 'Please enter a valid email address'); 
+      hasError = true; 
+    }
     
-    if (!phone) { showError('register-phone', 'Phone is required'); hasError = true; }
-    else if (!isValidPhone(phone)) { showError('register-phone', 'Must be a 10-digit number'); hasError = true; }
+    // Phone Number validation
+    if (!phoneNum) { 
+      showError('register-phone', 'Phone number is required'); 
+      hasError = true; 
+    } else if (!isValidPhoneNumber(phoneNum)) { 
+      showError('register-phone', 'Please enter a valid phone number (7-15 digits)'); 
+      hasError = true; 
+    }
+
+    // WhatsApp Number validation
+    if (!whatsappNum) {
+      showError('register-whatsapp', 'WhatsApp number is required');
+      hasError = true;
+    } else if (!isValidPhoneNumber(whatsappNum)) {
+      showError('register-whatsapp', 'Please enter a valid WhatsApp number (7-15 digits)');
+      hasError = true;
+    }
     
-    if (!password) { showError('register-password', 'Password is required'); hasError = true; }
-    else if (password.length < 6) { showError('register-password', 'Min 6 characters required'); hasError = true; }
+    // Password validation
+    if (!password) { 
+      showError('register-password', 'Password is required'); 
+      hasError = true; 
+    } else if (password.length < 6) { 
+      showError('register-password', 'Password must be at least 6 characters'); 
+      hasError = true; 
+    }
     
-    if (password !== confirm) { showError('register-confirm', 'Passwords do not match'); hasError = true; }
+    // Confirm Password validation
+    if (!confirm) {
+      showError('register-confirm', 'Please confirm your password');
+      hasError = true;
+    } else if (password !== confirm) { 
+      showError('register-confirm', 'Passwords do not match'); 
+      hasError = true; 
+    }
 
     if (hasError) return;
+
+    const fullPhone = `${phoneCode} ${phoneNum}`;
+    const fullWhatsapp = `${whatsappCode} ${whatsappNum}`;
 
     const btn = document.getElementById('register-submit');
     setButtonLoading(btn, true);
 
     setTimeout(() => {
-      const res = Store.register(name, email, phone, password);
+      const res = Store.register(name, email, fullPhone, fullWhatsapp, password);
       setButtonLoading(btn, false);
       
       if (res.success) {
-        Store.showToast('Account created successfully!', 'success');
+        Store.showToast('Account created successfully! Please log in.', 'success');
         formRegister.reset();
         switchTab('login');
         // Pre-fill email in login
         document.getElementById('login-email').value = email;
+        document.getElementById('login-password').focus();
       } else {
         Store.showToast(res.error, 'error');
-        if (res.error.includes('Email')) showError('register-email', res.error);
+        if (res.error.toLowerCase().includes('email')) {
+          showError('register-email', res.error);
+        }
       }
     }, 500);
   });

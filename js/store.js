@@ -655,9 +655,9 @@ const Store = (() => {
   }
 
   /* ---- Auth ---- */
-  function register(name, email, phone, password) {
+  function register(name, email, phone, whatsapp, password) {
     const users = get(KEYS.USERS) || [];
-    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+    if (users.find(u => u.email.toLowerCase() === email.toLowerCase().trim())) {
       return { success: false, error: 'An account with this email already exists.' };
     }
     const user = {
@@ -665,6 +665,7 @@ const Store = (() => {
       name,
       email: email.toLowerCase().trim(),
       phone,
+      whatsapp: whatsapp || phone,
       password,
       createdAt: new Date().toISOString(),
     };

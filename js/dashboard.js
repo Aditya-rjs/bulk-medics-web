@@ -680,6 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameDisp = document.getElementById('profileNameDisplay');
     const emailDisp = document.getElementById('profileEmailDisplay');
     const phoneDisp = document.getElementById('profilePhoneDisplay');
+    const whatsappDisp = document.getElementById('profileWhatsappDisplay');
     const dateDisp = document.getElementById('profileDateDisplay');
     const nameHead = document.getElementById('profileNameHeading');
     const avatarLg = document.getElementById('profileAvatarLg');
@@ -687,6 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nameDisp) nameDisp.textContent = u.name;
     if (emailDisp) emailDisp.textContent = u.email;
     if (phoneDisp) phoneDisp.textContent = u.phone || 'Not provided';
+    if (whatsappDisp) whatsappDisp.textContent = u.whatsapp || u.phone || 'Not provided';
     if (dateDisp) dateDisp.textContent = fmtDate(u.createdAt);
     if (nameHead) nameHead.textContent = u.name;
     if (avatarLg) avatarLg.textContent = initials(u.name);
@@ -694,9 +696,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const editName = document.getElementById('editName');
     const editEmail = document.getElementById('editEmail');
     const editPhone = document.getElementById('editPhone');
+    const editWhatsapp = document.getElementById('editWhatsapp');
     if (editName) editName.value = u.name;
     if (editEmail) editEmail.value = u.email;
     if (editPhone) editPhone.value = u.phone || '';
+    if (editWhatsapp) editWhatsapp.value = u.whatsapp || u.phone || '';
 
     const orders = Store.getMyOrders();
     const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
@@ -732,7 +736,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const newName = document.getElementById('editName').value.trim();
       const newEmail = document.getElementById('editEmail').value.trim();
       const newPhone = document.getElementById('editPhone').value.trim();
-      if (Store.updateUser({ name: newName, email: newEmail, phone: newPhone })) {
+      const newWhatsapp = document.getElementById('editWhatsapp').value.trim();
+      if (Store.updateUser({ name: newName, email: newEmail, phone: newPhone, whatsapp: newWhatsapp })) {
         Store.showToast('Profile updated successfully', 'success');
         sidebarUserName.textContent = newName;
         userAvatar.textContent = initials(newName);

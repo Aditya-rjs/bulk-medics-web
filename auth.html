@@ -62,14 +62,14 @@
           <!-- Login Form -->
           <form id="login-form" class="auth-form active-form" novalidate>
             <div class="form-group">
-              <label for="login-email" class="form-label">Email Address</label>
-              <input type="email" id="login-email" class="form-input" placeholder="" required>
+              <label for="login-email" class="form-label">Email Address <span class="required-star">*</span></label>
+              <input type="email" id="login-email" class="form-input" placeholder="e.g. name@pharmacy.com" required>
               <div class="form-error" id="login-email-error"></div>
             </div>
             <div class="form-group">
-              <label for="login-password" class="form-label">Password</label>
+              <label for="login-password" class="form-label">Password <span class="required-star">*</span></label>
               <div class="password-wrapper">
-                <input type="password" id="login-password" class="form-input" placeholder="" required>
+                <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
                 <button type="button" class="password-toggle" tabindex="-1">
                   <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   <svg class="icon-eye-off hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -84,24 +84,90 @@
           <!-- Register Form -->
           <form id="register-form" class="auth-form" novalidate>
             <div class="form-group">
-              <label for="register-name" class="form-label">Full Name</label>
-              <input type="text" id="register-name" class="form-input" placeholder="" required>
+              <label for="register-name" class="form-label">Full Name <span class="required-star">*</span></label>
+              <input type="text" id="register-name" class="form-input" placeholder="e.g. Dr. Rajesh Patel" required>
               <div class="form-error" id="register-name-error"></div>
             </div>
             <div class="form-group">
-              <label for="register-email" class="form-label">Email Address</label>
-              <input type="email" id="register-email" class="form-input" placeholder="" required>
+              <label for="register-email" class="form-label">Email Address <span class="required-star">*</span></label>
+              <input type="email" id="register-email" class="form-input" placeholder="e.g. rajesh@patelpharmacy.com" required>
               <div class="form-error" id="register-email-error"></div>
             </div>
             <div class="form-group">
-              <label for="register-phone" class="form-label">Phone Number</label>
-              <input type="tel" id="register-phone" class="form-input" placeholder="" required>
+              <label for="register-phone" class="form-label">Phone Number <span class="required-star">*</span></label>
+              <div class="phone-input-group">
+                <select id="register-phone-code" class="country-code-select" aria-label="Phone Country Code" required>
+                  <option value="+91" selected>🇮🇳 +91 (IN)</option>
+                  <option value="+1">🇺🇸 +1 (US)</option>
+                  <option value="+44">🇬🇧 +44 (UK)</option>
+                  <option value="+971">🇦🇪 +971 (AE)</option>
+                  <option value="+966">🇸🇦 +966 (SA)</option>
+                  <option value="+65">🇸🇬 +65 (SG)</option>
+                  <option value="+61">🇦🇺 +61 (AU)</option>
+                  <option value="+1">🇨🇦 +1 (CA)</option>
+                  <option value="+49">🇩🇪 +49 (DE)</option>
+                  <option value="+33">🇫🇷 +33 (FR)</option>
+                  <option value="+81">🇯🇵 +81 (JP)</option>
+                  <option value="+27">🇿🇦 +27 (ZA)</option>
+                  <option value="+234">🇳🇬 +234 (NG)</option>
+                  <option value="+55">🇧🇷 +55 (BR)</option>
+                  <option value="+60">🇲🇾 +60 (MY)</option>
+                  <option value="+62">🇮🇩 +62 (ID)</option>
+                  <option value="+880">🇧🇩 +880 (BD)</option>
+                  <option value="+94">🇱🇰 +94 (LK)</option>
+                  <option value="+977">🇳🇵 +977 (NP)</option>
+                  <option value="+92">🇵🇰 +92 (PK)</option>
+                  <option value="+254">🇰🇪 +254 (KE)</option>
+                  <option value="+63">🇵🇭 +63 (PH)</option>
+                  <option value="+34">🇪🇸 +34 (ES)</option>
+                  <option value="+39">🇮🇹 +39 (IT)</option>
+                  <option value="+86">🇨🇳 +86 (CN)</option>
+                </select>
+                <input type="tel" id="register-phone" class="form-input phone-number-input" placeholder="e.g. 9876543210" required>
+              </div>
               <div class="form-error" id="register-phone-error"></div>
             </div>
             <div class="form-group">
-              <label for="register-password" class="form-label">Password</label>
+              <div class="label-with-action">
+                <label for="register-whatsapp" class="form-label">WhatsApp Number <span class="required-star">*</span></label>
+                <button type="button" class="btn-copy-phone" id="btn-same-as-phone">Same as phone</button>
+              </div>
+              <div class="phone-input-group">
+                <select id="register-whatsapp-code" class="country-code-select" aria-label="WhatsApp Country Code" required>
+                  <option value="+91" selected>🇮🇳 +91 (IN)</option>
+                  <option value="+1">🇺🇸 +1 (US)</option>
+                  <option value="+44">🇬🇧 +44 (UK)</option>
+                  <option value="+971">🇦🇪 +971 (AE)</option>
+                  <option value="+966">🇸🇦 +966 (SA)</option>
+                  <option value="+65">🇸🇬 +65 (SG)</option>
+                  <option value="+61">🇦🇺 +61 (AU)</option>
+                  <option value="+1">🇨🇦 +1 (CA)</option>
+                  <option value="+49">🇩🇪 +49 (DE)</option>
+                  <option value="+33">🇫🇷 +33 (FR)</option>
+                  <option value="+81">🇯🇵 +81 (JP)</option>
+                  <option value="+27">🇿🇦 +27 (ZA)</option>
+                  <option value="+234">🇳🇬 +234 (NG)</option>
+                  <option value="+55">🇧🇷 +55 (BR)</option>
+                  <option value="+60">🇲🇾 +60 (MY)</option>
+                  <option value="+62">🇮🇩 +62 (ID)</option>
+                  <option value="+880">🇧🇩 +880 (BD)</option>
+                  <option value="+94">🇱🇰 +94 (LK)</option>
+                  <option value="+977">🇳🇵 +977 (NP)</option>
+                  <option value="+92">🇵🇰 +92 (PK)</option>
+                  <option value="+254">🇰🇪 +254 (KE)</option>
+                  <option value="+63">🇵🇭 +63 (PH)</option>
+                  <option value="+34">🇪🇸 +34 (ES)</option>
+                  <option value="+39">🇮🇹 +39 (IT)</option>
+                  <option value="+86">🇨🇳 +86 (CN)</option>
+                </select>
+                <input type="tel" id="register-whatsapp" class="form-input phone-number-input" placeholder="e.g. 9876543210" required>
+              </div>
+              <div class="form-error" id="register-whatsapp-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="register-password" class="form-label">Password <span class="required-star">*</span></label>
               <div class="password-wrapper">
-                <input type="password" id="register-password" class="form-input" placeholder="" required>
+                <input type="password" id="register-password" class="form-input" placeholder="Min 6 characters" required>
                 <button type="button" class="password-toggle" tabindex="-1">
                   <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   <svg class="icon-eye-off hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -110,9 +176,9 @@
               <div class="form-error" id="register-password-error"></div>
             </div>
             <div class="form-group">
-              <label for="register-confirm" class="form-label">Confirm Password</label>
+              <label for="register-confirm" class="form-label">Confirm Password <span class="required-star">*</span></label>
               <div class="password-wrapper">
-                <input type="password" id="register-confirm" class="form-input" placeholder="" required>
+                <input type="password" id="register-confirm" class="form-input" placeholder="Repeat your password" required>
                 <button type="button" class="password-toggle" tabindex="-1">
                   <svg class="icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                   <svg class="icon-eye-off hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
