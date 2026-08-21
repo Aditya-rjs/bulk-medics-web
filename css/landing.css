@@ -54,14 +54,69 @@ img {
 }
 
 /* ==========================================================================
-   2. CONTAINER
+   2. CONTAINER SYSTEM & INTENTIONAL WIDTH VARIATION
    ========================================================================== */
 .container {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1260px;
   margin: 0 auto;
   padding: 0 40px;
   box-sizing: border-box;
+}
+
+/* Section-Specific Content Max-Widths for Natural Layout Rhythm */
+.nav-container {
+  max-width: 1260px;
+}
+
+.hero-content,
+.hero .container {
+  max-width: 1260px;
+}
+
+.stats-strip .container {
+  max-width: 1220px;
+}
+
+.categories-section .container {
+  max-width: 1240px;
+}
+
+.about-section .container {
+  max-width: 1160px;
+}
+
+.products-section .container {
+  max-width: 1260px;
+}
+
+.packaging-section .container {
+  max-width: 1160px;
+}
+
+.steps-section .container {
+  max-width: 1200px;
+}
+
+.quality-section .container {
+  max-width: 1220px;
+}
+
+.testimonials-section .container {
+  max-width: 1180px;
+}
+
+.faq-section .container {
+  max-width: 820px;
+}
+
+.cta-banner .container {
+  max-width: 880px;
+}
+
+.footer-container,
+.site-footer .container {
+  max-width: 1260px;
 }
 
 /* ==========================================================================
@@ -988,7 +1043,8 @@ img {
    15. FAQ SECTION
    ========================================================================== */
 .faq-list {
-  max-width: 800px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
 }
 
