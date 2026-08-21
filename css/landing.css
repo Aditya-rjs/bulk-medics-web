@@ -54,69 +54,90 @@ img {
 }
 
 /* ==========================================================================
-   2. CONTAINER SYSTEM & INTENTIONAL WIDTH VARIATION
+   2. CONTAINER SYSTEM & DYNAMIC SECTION WIDTH VARIATION
    ========================================================================== */
 .container {
   width: 100%;
-  max-width: 1260px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 40px;
   box-sizing: border-box;
 }
 
-/* Section-Specific Content Max-Widths for Natural Layout Rhythm */
+/* Distinct Section Content Widths for Dynamic Layout Rhythm */
 .nav-container {
-  max-width: 1260px;
+  max-width: 1440px;
+  padding: 0 48px;
 }
 
-.hero-content,
+.hero-container,
 .hero .container {
-  max-width: 1260px;
+  max-width: 1380px;
+  padding: 0 48px;
 }
 
-.stats-strip .container {
-  max-width: 1220px;
+.stats-strip .container,
+.stats-container {
+  max-width: 1360px;
+  padding: 0 40px;
 }
 
 .categories-section .container {
-  max-width: 1240px;
+  max-width: 1320px;
+  padding: 0 40px;
 }
 
 .about-section .container {
-  max-width: 1160px;
+  max-width: 1180px;
+  padding: 0 40px;
 }
 
 .products-section .container {
-  max-width: 1260px;
+  max-width: 1380px;
+  padding: 0 48px;
 }
 
-.packaging-section .container {
-  max-width: 1160px;
+.packaging-section .container,
+.packaging-container {
+  max-width: 1220px;
+  padding: 0 40px;
 }
 
 .steps-section .container {
-  max-width: 1200px;
+  max-width: 1280px;
+  padding: 0 40px;
 }
 
 .quality-section .container {
-  max-width: 1220px;
+  max-width: 1360px;
+  padding: 0 48px;
 }
 
 .testimonials-section .container {
-  max-width: 1180px;
+  max-width: 1260px;
+  padding: 0 40px;
 }
 
 .faq-section .container {
   max-width: 820px;
+  padding: 0 24px;
 }
 
-.cta-banner .container {
-  max-width: 880px;
+.cta-banner .container,
+.cta-container {
+  max-width: 860px;
+  padding: 0 24px;
 }
 
 .footer-container,
 .site-footer .container {
-  max-width: 1260px;
+  max-width: 1400px;
+  padding: 0 48px;
+}
+
+.bottom-container {
+  max-width: 1400px;
+  padding: 0 48px;
 }
 
 /* ==========================================================================
@@ -366,15 +387,15 @@ img {
   z-index: -1;
 }
 
-.hero-content {
+.hero-text {
   color: #ffffff;
-  max-width: 680px;
+  max-width: 820px;
 }
 
 .hero h1 {
   color: #ffffff;
   font-size: clamp(2.75rem, 5vw, 4.15rem);
-  line-height: 1.06;
+  line-height: 1.08;
   margin-bottom: 1.35rem;
   letter-spacing: -0.02em;
   font-weight: 700;
@@ -384,7 +405,7 @@ img {
   font-size: 1.1875rem;
   opacity: 0.92;
   margin-bottom: 1.6rem;
-  max-width: 580px;
+  max-width: 660px;
   line-height: 1.65;
   color: #e5e7eb;
 }
@@ -1394,8 +1415,29 @@ img {
    22. RESPONSIVE — MOBILE (max 768px)
    ========================================================================== */
 @media (max-width: 768px) {
-  .container {
-    padding: 0 20px;
+  .container,
+  .nav-container,
+  .hero-container,
+  .hero .container,
+  .stats-strip .container,
+  .stats-container,
+  .categories-section .container,
+  .about-section .container,
+  .products-section .container,
+  .packaging-section .container,
+  .packaging-container,
+  .steps-section .container,
+  .quality-section .container,
+  .testimonials-section .container,
+  .faq-section .container,
+  .cta-banner .container,
+  .cta-container,
+  .footer-container,
+  .site-footer .container,
+  .bottom-container {
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 100%;
   }
 
   .section {
@@ -2072,8 +2114,28 @@ img {
    23. RESPONSIVE — SMALL MOBILE (max 400px)
    ========================================================================== */
 @media (max-width: 400px) {
-  .container {
-    padding: 0 16px;
+  .container,
+  .nav-container,
+  .hero-container,
+  .hero .container,
+  .stats-strip .container,
+  .stats-container,
+  .categories-section .container,
+  .about-section .container,
+  .products-section .container,
+  .packaging-section .container,
+  .packaging-container,
+  .steps-section .container,
+  .quality-section .container,
+  .testimonials-section .container,
+  .faq-section .container,
+  .cta-banner .container,
+  .cta-container,
+  .footer-container,
+  .site-footer .container,
+  .bottom-container {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .hero h1 {
