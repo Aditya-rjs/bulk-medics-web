@@ -26,31 +26,68 @@ document.addEventListener('DOMContentLoaded', () => {
         header.classList.add('scrolled');
     }
 
-    // 2. Mobile Menu Toggle
+    // 2. Mobile Menu Toggle & Drawer Controller
     const menuToggle = document.getElementById('mobile-menu-toggle');
+    const menuClose = document.getElementById('mobile-menu-close');
     const siteNav = document.getElementById('site-nav');
-    
+    const navBackdrop = document.getElementById('nav-backdrop');
+
+    function openMobileMenu() {
+        if (!siteNav) return;
+        siteNav.classList.add('active');
+        if (menuToggle) {
+            menuToggle.classList.add('active');
+            menuToggle.setAttribute('aria-expanded', 'true');
+        }
+        if (navBackdrop) navBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+        if (!siteNav) return;
+        siteNav.classList.remove('active');
+        if (menuToggle) {
+            menuToggle.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+        }
+        if (navBackdrop) navBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
     if (menuToggle && siteNav) {
-        menuToggle.addEventListener('click', () => {
-            menuToggle.classList.toggle('active');
-            siteNav.classList.toggle('active');
-            
-            // Prevent body scroll when menu is open
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (siteNav.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
+                closeMobileMenu();
             } else {
-                document.body.style.overflow = '';
+                openMobileMenu();
             }
         });
-        
-        // Close menu when clicking a link
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                menuToggle.classList.remove('active');
-                siteNav.classList.remove('active');
-                document.body.style.overflow = '';
+
+        if (menuClose) {
+            menuClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeMobileMenu();
             });
+        }
+
+        if (navBackdrop) {
+            navBackdrop.addEventListener('click', closeMobileMenu);
+        }
+
+        // Close menu when clicking any navigation link or action button
+        const navLinksAndActions = siteNav.querySelectorAll('.nav-link, .nav-actions a');
+        navLinksAndActions.forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && siteNav.classList.contains('active')) {
+                closeMobileMenu();
+            }
         });
     }
 

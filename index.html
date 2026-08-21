@@ -21,10 +21,26 @@
                 </svg>
                 Bulk Medics
             </a>
-            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle Menu">
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
                 <span></span><span></span><span></span>
             </button>
+            <div id="nav-backdrop" class="nav-backdrop"></div>
             <nav id="site-nav" class="site-nav">
+                <div class="nav-drawer-header">
+                    <a href="index.html" class="drawer-logo">
+                        <svg class="logo-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="10" rx="5"></rect>
+                            <line x1="12" y1="7" x2="12" y2="17"></line>
+                        </svg>
+                        Bulk Medics
+                    </a>
+                    <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Close Menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
                 <ul class="nav-links">
                     <li><a href="#categories" class="nav-link">Products</a></li>
                     <li><a href="#about" class="nav-link">Services</a></li>
